@@ -9,6 +9,14 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 
+/**
+ * Represents a quiz for a specific country.
+ *
+ * @property country The country associated with the quiz.
+ * @property index The index of the current question in the quiz.
+ * @property score The score achieved by the user in the quiz.
+ * @property context The context of the quiz (usually an activity or application context).
+ */
 class Quiz(
     val country: Country,
     var index: Int = 0,
@@ -20,8 +28,10 @@ class Quiz(
     private lateinit var answersRadioGroup: RadioGroup
     private var alertDialog: AlertDialog? = null
 
+    /**
+     * Starts the quiz by showing the first question.
+     */
     fun startQuiz() {
-        // Show the inflated layout for the first question
         showQuestionDialog()
     }
 
@@ -68,7 +78,7 @@ class Quiz(
         val selectedRadioButton = answersRadioGroup.findViewById<RadioButton>(selectedRadioButtonId)
         val userAnswer = selectedRadioButton?.text.toString()
 
-        // Check if the answer is correct
+        // Check if the answer is correct and update the score
         if (isCorrectAnswer(userAnswer, currentQuestion.answer)) {
             score++
         }
@@ -89,16 +99,17 @@ class Quiz(
     }
 
     private fun showQuizResult() {
-        alertDialog?.dismiss() // Dismiss the last question dialog if it's still showing
+        // Dismiss the last question dialog if it's still showing
+        alertDialog?.dismiss()
 
+        // Display the final score in a toast message
         val resultMessage = "Quiz finished!\nYour score: $score/${questions.size}"
         Toast.makeText(context, resultMessage, Toast.LENGTH_LONG).show()
 
+        // Show the country choice dialog if there are locked neighbors
         val choice = CountryChoice(context, country, score)
-        if (country.getLockedNeighbors().size > 0)
+        if (country.getLockedNeighbors().size > 0) {
             choice.showCountryChoiceDialog()
-
+        }
     }
 }
-
-

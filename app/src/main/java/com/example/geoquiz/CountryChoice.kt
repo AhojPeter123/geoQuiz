@@ -8,12 +8,22 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.Toast
 
+/**
+ * A dialog that allows the user to choose a set number of countries.
+ *
+ * @param context      The context used to create the dialog.
+ * @param country      The country object associated with the dialog.
+ * @param numQuestions The number of countries the user should choose.
+ */
 class CountryChoice(private val context: Context, private val country: Country, private val numQuestions: Int) {
 
     private lateinit var checkBoxes: List<CheckBox>
     private lateinit var alertDialog: AlertDialog
     var selectedCountries = arrayListOf<String>()
 
+    /**
+     * Shows the country choice dialog.
+     */
     fun showCountryChoiceDialog() {
         val inflater = LayoutInflater.from(context)
         val dialogView = inflater.inflate(R.layout.country_choice, null)
@@ -27,6 +37,7 @@ class CountryChoice(private val context: Context, private val country: Country, 
         container.removeAllViews()
         val checkBoxes = mutableListOf<CheckBox>()
 
+        // Create a checkbox for each locked neighbor country
         for (neighbor in country.getLockedNeighbors()) {
             val checkBox = CheckBox(context)
             checkBox.text = neighbor.name
@@ -42,19 +53,23 @@ class CountryChoice(private val context: Context, private val country: Country, 
             .setView(dialogView)
             .setTitle("Choose $numQuestions Countries")
             .setPositiveButton("OK") { _, _ ->
+                // Validate the selected countries
                 if (getCountries().size == numQuestions) {
-                    for (c in getCountries())
+                    // Unlock the selected countries
+                    for (c in getCountries()) {
                         com.example.geoquiz.Map.getCountry(c)?.unlocked = true
+                    }
                 } else {
+                    // Show a toast message and redo the country selection
                     Toast.makeText(context, "Please select $numQuestions countries", Toast.LENGTH_SHORT).show()
-                    showCountryChoiceDialog() // Redo the country selection
+                    showCountryChoiceDialog()
                 }
             }
             .create()
     }
 
     private fun getCountries(): ArrayList<String> {
-
+        selectedCountries.clear()
         for (checkBox in checkBoxes) {
             if (checkBox.isChecked) {
                 selectedCountries.add(checkBox.text.toString())

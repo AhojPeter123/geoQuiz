@@ -8,15 +8,25 @@ import android.view.LayoutInflater
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 
-
+/**
+ * The main activity of the GeoQuiz app.
+ */
 class MainActivity : AppCompatActivity() {
 
     var dialogDisplay = false
+
+    /**
+     * Called when the configuration of the device changes.
+     * Sets the `dialogDisplay` flag to indicate that the dialog should be displayed.
+     */
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         dialogDisplay = true
     }
 
+    /**
+     * Called when the activity is created.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -25,17 +35,25 @@ class MainActivity : AppCompatActivity() {
         val scrollView = findViewById<ScrollView>(R.id.scroll)
         val horizontalScrollView = findViewById<HorizontalScrollView>(R.id.hScroll)
 
-        scrollView.post { scrollView.smoothScrollTo(0 , 400) }
-        horizontalScrollView.post { horizontalScrollView.smoothScrollTo(1200 , 0) }
+        // Scroll to a specific position in the scroll view
+        scrollView.post { scrollView.smoothScrollTo(0, 400) }
+
+        // Scroll to a specific position in the horizontal scroll view
+        horizontalScrollView.post { horizontalScrollView.smoothScrollTo(1200, 0) }
 
         val imgView = findViewById<ImageView>(R.id.imgView)
         val bitmap = BitmapFactory.decodeResource(resources, R.drawable.map_coloured)
         val colorExtractionTouchListener = ColorTouchListener(bitmap, context = this)
         imgView.setOnTouchListener(colorExtractionTouchListener)
+
+        // Display the country choice dialog if it hasn't been displayed before
         if (!dialogDisplay)
             showCountryChoiceDialog()
     }
 
+    /**
+     * Displays the country choice dialog for selecting the starting country.
+     */
     private fun showCountryChoiceDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.starting_country_choice, null)
         val dialogBuilder = AlertDialog.Builder(this)
@@ -48,7 +66,6 @@ class MainActivity : AppCompatActivity() {
 
         val startButton = dialogView.findViewById<Button>(R.id.startButton)
         val countryAutoCompleteTextView = dialogView.findViewById<AutoCompleteTextView>(R.id.countryAutoCompleteTextView)
-
 
         val countryList = ArrayList(com.example.geoquiz.Map.countryList.keys) // List of country names
         val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, countryList)
@@ -68,5 +85,4 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 }
